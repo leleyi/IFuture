@@ -1,16 +1,9 @@
 
-import com.sun.scenario.effect.impl.state.LinearConvolveKernel;
-import netscape.security.UserTarget;
-
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 public class IThreadPoolExecutor<T> extends IExecutorService {
 
@@ -67,7 +60,7 @@ public class IThreadPoolExecutor<T> extends IExecutorService {
 
     private volatile boolean RUNNING = true;
 
-    //所有任务都放队列中，让工作线程来消费
+    // task all in this queue
 
     private static BlockingQueue<Runnable> queue = null;
 
@@ -75,10 +68,10 @@ public class IThreadPoolExecutor<T> extends IExecutorService {
 
     private final List<Thread> threadList = new ArrayList<Thread>();
 
-    //工作线程数
+    // work thread num
     int poolSize = 0;
 
-    //核心线程数（创建了多少个工作线程）
+    // number of thread
     int coreSize = 0;
 
     boolean shutdown = false;

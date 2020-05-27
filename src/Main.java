@@ -6,8 +6,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-//import java.util.concurrent.Future;
-//import java.util.concurrent.ThreadFactory;
 
 /**
  *
@@ -27,20 +25,6 @@ public class Main {
             TimeUnit.SECONDS.sleep(time);
             return tid;
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-
-//        for (int i = 0; i < 1; i++) {
-//            IExecutorService<Future<String>> es = new IExecutorService<>();
-//            IFuture<Future<String>> o = es.submit(new Task());
-//            results.add(o);
-//        }
-//
-//        for (IFuture<Future<String>> res : results) {
-//            System.out.println(res.get());
-//        }
     }
 
     @Test
