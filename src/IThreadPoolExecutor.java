@@ -10,6 +10,7 @@ public class IThreadPoolExecutor<T> extends IExecutorService {
 
     @Override
     public synchronized void execute(Runnable runnable) {
+//        System.out.println("coreSize : " + coreSize);
         if (runnable == null) {
             throw new NullPointerException();
         }
@@ -68,11 +69,15 @@ public class IThreadPoolExecutor<T> extends IExecutorService {
 
     private final List<Thread> threadList = new ArrayList<Thread>();
 
-    // work thread num
+    /**
+     * size of pool
+     */
     int poolSize = 0;
 
-    // number of thread
-    int coreSize = 0;
+    /**
+     * core thread num
+     */
+    volatile int coreSize = 0;
 
     boolean shutdown = false;
 
