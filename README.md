@@ -45,3 +45,61 @@ In this variant, you should implement your library for futures.
 – it will be preferred.
 
 #### work demonstration 
+
+```IFuture``` is usually used in conjunction with the thread pool to obtain the return value after the thread pool returns to execution. We assume that the ```IExecutors``` factory method is used to construct a thread pool es. There are two ways for es to perform a task. One is to execute ```es.execute (runnable)```, in which case there is no return value; the other is to execute ```es .submit (runnale) ```or ```es.submit (callable)```, this case will return a Future object, and then call Future's ```get ()``` to get the return value.
+
+```java
+public interface IFuture<V> {
+
+    boolean isDone();
+    boolean isCancelled();
+    boolean cancel();
+
+    V get();
+    V get(long timeout) throws TimeoutException;
+}
+```
+
+- ```IFuture``` is an interface. 
+  - By calling Future's ```get ()``` method, a result value can be returned when the task is over. If the work is not over, the current thread will be blocked until the task is completed. 
+  - For tasks, if the task has been stopped, the ```cancel ()``` method will return true; if the task has completed or has been stopped or the task cannot be stopped, then ```cancel ()``` will return a false. When a task is successfully stopped, he cannot perform it again. 
+  - The ```isDone ()``` and```isCancel ()`` methods can determine whether the current job is completed and cancelled.
+
+```java
+public class IFutureTask<V> implements IRunnableFuture<V>
+```
+
+- ```IFutureTask``` implements the ```IRunnableFuture``` interface
+
+```java
+public class IThreadPoolExecutor<T> extends IExecutorService {
+
+
+    @Override
+    public synchronized void execute(Runnable runnable) {...}
+
+    class Worker implements Runnable {...}
+
+    private volatile boolean RUNNING = true;
+
+    private static BlockingQueue<Runnable> queue = null;
+    private final HashSet<Worker> workers = new HashSet<Worker>();
+    private final List<Thread> threadList = new ArrayList<Thread>();
+
+    int poolSize = 0;
+    volatile int coreSize = 0;
+    boolean shutdown = false;
+
+    public IThreadPoolExecutor(int poolSize) {...}
+
+    public void addThread(Runnable runnable) {...}
+
+    @Override
+    public void shutdown() {...}
+
+}
+```
+
+- 
+- work demonstration (how to use developed software, how to test it), should be repeatable by an instructor by given command-line
+  examples;
