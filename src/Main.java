@@ -1,8 +1,5 @@
 import org.junit.Test;
-import org.omg.CORBA.TIMEOUT;
 
-import java.awt.event.WindowFocusListener;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -79,6 +76,7 @@ public class Main {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
         IFuture<String> future = service.submit(new Task(5));
         String s = future.get(20);
+        System.out.println();
         assert future.isDone();
     }
 
