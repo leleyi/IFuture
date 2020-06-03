@@ -79,7 +79,6 @@ public class Main {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
         IFuture<String> future = service.submit(new Task(5));
         String s = future.get(20);
-        assert "thread : 12".equals(s);
         assert future.isDone();
     }
 
