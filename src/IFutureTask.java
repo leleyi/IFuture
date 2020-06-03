@@ -1,12 +1,7 @@
-import org.omg.CORBA.TIMEOUT;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
-import java.sql.Time;
-import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
- * @author leleyi
+ * @author author
  */
 public class IFutureTask<V> implements IRunnableFuture<V> {
 
@@ -18,7 +13,7 @@ public class IFutureTask<V> implements IRunnableFuture<V> {
     private Callable<V> callable;
     private V result;
 
-    public IFutureTask(Callable<V> callable) {
+    IFutureTask(Callable<V> callable) {
         if (callable == null) {
             throw new NullPointerException();
         }
@@ -58,7 +53,9 @@ public class IFutureTask<V> implements IRunnableFuture<V> {
 
     @Override
     public synchronized Object get() {
-        while (state != DONE) ;
+        while (state != DONE) {
+
+        }
         return this.result;
     }
 
@@ -70,7 +67,7 @@ public class IFutureTask<V> implements IRunnableFuture<V> {
         if (timeout <= 0L) {
             throw new TimeoutException();
         }
-        long l = TimeUnit.NANOSECONDS.toNanos(timeout);
+        long l = TimeUnit.SECONDS.toNanos(timeout);
 
         long d = System.nanoTime() + l;
         while (d > System.nanoTime()) {
@@ -78,6 +75,6 @@ public class IFutureTask<V> implements IRunnableFuture<V> {
                 return this.result;
             }
         }
-        throw new TimeoutException();
+        throw new TimeoutException("timeOut");
     }
 }

@@ -46,7 +46,7 @@ public class IThreadPoolExecutor<T> extends IExecutorService {
             }
         }
 
-        public Runnable getTask() throws InterruptedException {
+        public synchronized Runnable getTask() throws InterruptedException {
             return queue.take();
         }
 
@@ -68,11 +68,15 @@ public class IThreadPoolExecutor<T> extends IExecutorService {
 
     private final List<Thread> threadList = new ArrayList<Thread>();
 
-    // work thread num
+    /**
+     * size of pool
+     */
     int poolSize = 0;
 
-    // number of thread
-    int coreSize = 0;
+    /**
+     * core thread num
+     */
+    volatile int coreSize = 0;
 
     boolean shutdown = false;
 

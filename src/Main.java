@@ -1,7 +1,7 @@
-import com.sun.tracing.dtrace.ArgsAttributes;
 import org.junit.Test;
-import sun.awt.windows.WPrinterJob;
+import org.omg.CORBA.TIMEOUT;
 
+import java.awt.event.WindowFocusListener;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +14,32 @@ public class Main {
 
     public static class Task implements Callable<String> {
         int time;
+        String string;
+        int id;
 
         public Task(int i) {
             this.time = i;
         }
 
+        public Task(int i, String string) {
+            this.time = i;
+            this.string = string;
+        }
+
+        public Task(int i, int id) {
+            this.time = i;
+            this.id = id;
+        }
+
+
         @Override
         public String call() throws InterruptedException {
-            String tid = String.valueOf(Thread.currentThread().getId());
+            Integer threadId = Integer.valueOf(Thread.currentThread().getId() + "") - 12;
+            String tid = "task : " + id + "  thread : " + threadId;
             TimeUnit.SECONDS.sleep(time);
+            if (string != null) {
+                return string;
+            }
             return tid;
         }
     }
@@ -30,61 +47,81 @@ public class Main {
     @Test
     public void testMuiTask() throws TimeoutException {
         List<IFuture> results = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            IExecutorService<String> service = IExecutors.newFixedThreadPool(15);
+        IExecutorService<String> service = IExecutors.newFixedThreadPool(15);
+        for (int i = 0; i < 10; i++) {
             IFuture<String> future = service.submit(new Task(1));
             results.add(future);
         }
-        //
-        System.out.println("sss : "+ results.size());
+        Task task = new Task(5);
         for (IFuture res :
                 results) {
             System.out.println(res.get());
         }
     }
 
-
     @Test
     public void testIsDone() throws InterruptedException {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
-        IFuture<String> future = service.submit(new Task(10));
+        IFuture<String> future = service.submit(new Task(5));
         boolean before = future.isDone();
-        System.out.println("isDone: " + before);
-        TimeUnit.SECONDS.sleep(5);
+        assert !future.isDone();
         boolean after = future.isDone();
-        System.out.println("isDone: " + after);
+        while (true) {
+            if (future.isDone()) {
+                break;
+            }
+        }
+        assert future.isDone();
     }
 
     @Test
     public void testExcutors() throws TimeoutException {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
-        IFuture<String> future = service.submit(new Task(100));
-        String s = future.get(600000000);
-        System.out.println(s);
+        IFuture<String> future = service.submit(new Task(5));
+        String s = future.get(20);
+        assert "thread : 12".equals(s);
+        assert future.isDone();
     }
 
     @Test
-    public void testCancel() {
+    public void testCancel() throws TimeoutException {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
-        IFuture<String> future = service.submit(new Task(10000));
+        IFuture<String> future = service.submit(new Task(5));
+        assert !future.isCancelled();
         future.cancel();
-        System.out.println(future.isCancelled());
+        assert null == future.get(10);
+        assert future.isCancelled();
     }
 
     @Test
     public void testGet() {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
-        IFuture<String> future = service.submit(new Task(10000));
+        IFuture<String> future = service.submit(new Task(5, "apple"));
         String s = future.get();
-        System.out.println(s);
+        assert "apple".equals(s);
+        assert future.isDone();
     }
 
 
     @Test
     public void testGetOutTime() throws TimeoutException {
         IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
-        IFuture<String> future = service.submit(new Task(10000));
-        String s = future.get(10);
-        System.out.println(s);
+        IFuture<String> future = service.submit(new Task(5));
+        try {
+            String s = future.get(1);
+        } catch (TimeoutException e) {
+            assert "timeOut".equals(e.getMessage());
+        }
+    }
+
+    // as we see,  there only have 5 worker do works when we submit 20 task.
+    // and the task will be add in the task queue to wait.
+    @Test
+    public void workerCountLimits() throws TimeoutException {
+        IExecutorService<String> service = IExecutors.newFixedThreadPool(5);
+        for (int i = 0; i < 20; i++) {
+            IFuture<String> future = service.submit(new Task(0, i));
+            System.out.println(future.get());
+        }
     }
 }

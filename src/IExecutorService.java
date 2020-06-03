@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public abstract class IExecutorService<T> {
 
-    IFuture<T> submit(Callable<T> task) {
+    synchronized IFuture<T> submit(Callable<T> task) {
         if (task == null) {
             throw new NullPointerException();
         }

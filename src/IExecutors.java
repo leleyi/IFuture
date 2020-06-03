@@ -1,9 +1,9 @@
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class IExecutors {
+class IExecutors {
 
 
-    public static IThreadPoolExecutor newFixedThreadPool(int nThreads) {
+    static IThreadPoolExecutor newFixedThreadPool(int nThreads) {
 
         return new IThreadPoolExecutor(nThreads);
 
